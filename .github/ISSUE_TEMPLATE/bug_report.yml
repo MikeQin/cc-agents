@@ -1,0 +1,240 @@
+name: 🐛 Bug Report
+description: Report a bug or issue with the AI Agent Dev Team
+title: "[BUG]: "
+labels: ["bug", "triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Thank you for reporting a bug!
+        
+        Please fill out the following information to help us understand and reproduce the issue.
+        
+        **Before submitting**: Please search existing issues to see if this bug has already been reported.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      description: Please confirm the following before submitting this bug report
+      options:
+        - label: I have searched existing issues and this is not a duplicate
+          required: true
+        - label: I have read the [README.md](../README.md) and [TUTORIAL.md](../TUTORIAL.md)
+          required: true
+        - label: I am using the latest version of the AI Agent Dev Team
+          required: true
+
+  - type: dropdown
+    id: bug-category
+    attributes:
+      label: Bug Category
+      description: What type of bug are you reporting?
+      options:
+        - Agent Configuration Issue
+        - Installation Script Problem
+        - Phase Detection Error
+        - Agent Identification Issue
+        - Tool Assignment Problem
+        - Documentation Error
+        - CI/CD Pipeline Issue
+        - Performance Issue
+        - Security Concern
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: affected-agent
+    attributes:
+      label: Affected Agent(s)
+      description: Which agent(s) are affected by this bug?
+      multiple: true
+      options:
+        - Will (PO) - Product Owner
+        - Mike (Architect) - System Architect
+        - Amy (Web UI Designer) - Web UI Designer
+        - Jennifer (Mobile UI Designer) - Mobile UI Designer
+        - Sarah (Security Engineer) - Security Engineer
+        - Jim (Web Developer) - Web Developer
+        - Bob (Mobile Developer) - Mobile Developer
+        - Luke (Backend Developer) - Backend Developer
+        - Vijay (QA Tester) - QA Tester
+        - Alex (DevOps Engineer) - DevOps Engineer
+        - code-reviewer - Code Review Specialist
+        - debugger - Debugging Specialist
+        - data-scientist - Data Analysis Expert
+        - github-initializer - Repository Setup Expert
+        - Multiple Agents
+        - Unknown/Not Agent Specific
+
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is
+      placeholder: Describe the bug in detail...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: A clear and concise description of what you expected to happen
+      placeholder: What should have happened instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual Behavior
+      description: A clear and concise description of what actually happened
+      placeholder: What actually happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Steps to Reproduce
+      description: Detailed steps to reproduce the bug
+      placeholder: |
+        1. Enter command in Claude Code: `claude --design --agent po "..."`
+        2. Agent responds with: '...'
+        3. Expected: '...'
+        4. Actual: '...'
+      value: |
+        1. 
+        2. 
+        3. 
+        4. 
+    validations:
+      required: true
+
+  - type: textarea
+    id: command-used
+    attributes:
+      label: Command Used
+      description: The exact command you used that caused the bug
+      placeholder: |
+        claude --design --agent po "Create a task management app"
+      render: bash
+
+  - type: textarea
+    id: agent-response
+    attributes:
+      label: Agent Response
+      description: The response you received from the agent (if applicable)
+      placeholder: Copy and paste the agent's response here...
+
+  - type: dropdown
+    id: environment-os
+    attributes:
+      label: Operating System
+      description: What operating system are you using?
+      options:
+        - Windows 11
+        - Windows 10
+        - macOS (Latest)
+        - macOS (Previous Version)
+        - Ubuntu/Linux
+        - WSL (Windows Subsystem for Linux)
+        - Other Linux Distribution
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: claude-version
+    attributes:
+      label: Claude Code Version
+      description: What version of Claude Code are you using?
+      placeholder: e.g., Latest, v1.2.3, etc.
+
+  - type: input
+    id: node-version
+    attributes:
+      label: Node.js Version
+      description: If applicable, what version of Node.js are you using?
+      placeholder: e.g., v18.17.0, v20.10.0
+
+  - type: input
+    id: python-version
+    attributes:
+      label: Python Version
+      description: If applicable, what version of Python are you using?
+      placeholder: e.g., 3.11.5, 3.12.0
+
+  - type: dropdown
+    id: installation-method
+    attributes:
+      label: Installation Method
+      description: How did you install the AI Agent Dev Team?
+      options:
+        - install-agents.sh script
+        - install-agents.sh --force
+        - Manual installation
+        - Git clone + manual setup
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: error-messages
+    attributes:
+      label: Error Messages
+      description: Any error messages or logs you encountered
+      placeholder: Copy and paste any error messages here...
+      render: text
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any additional context about the problem
+      placeholder: Add any other context about the problem here...
+
+  - type: textarea
+    id: potential-solution
+    attributes:
+      label: Potential Solution
+      description: If you have ideas on how to fix this bug, please share them
+      placeholder: Describe any potential solutions or workarounds you've tried...
+
+  - type: checkboxes
+    id: impact-level
+    attributes:
+      label: Impact Level
+      description: How does this bug affect your use of the AI Agent Dev Team?
+      options:
+        - label: 🔴 Critical - Completely blocks usage
+        - label: 🟡 High - Significantly impacts functionality
+        - label: 🟢 Medium - Minor inconvenience but workaround exists
+        - label: ⚪ Low - Cosmetic or documentation issue
+
+  - type: checkboxes
+    id: testing-willingness
+    attributes:
+      label: Testing Willingness
+      description: Are you willing to help test potential fixes?
+      options:
+        - label: I am willing to test potential fixes
+        - label: I can provide additional information if needed
+        - label: I am available for follow-up questions
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Next Steps
+        
+        After submitting this bug report:
+        1. Our team will review and triage the issue
+        2. We may ask for additional information or clarification
+        3. We'll work on reproducing and fixing the bug
+        4. You'll be notified of progress and when a fix is available
+        
+        Thank you for helping improve the AI Agent Dev Team! 🤖

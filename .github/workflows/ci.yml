@@ -1,0 +1,502 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '18'
+  PYTHON_VERSION: '3.11'
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  # Static Code Analysis and Linting
+  code-quality:
+    name: Code Quality & Security Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.npm
+            ~/.cache/pip
+            node_modules
+          key: ${{ runner.os }}-deps-${{ hashFiles('**/package-lock.json', '**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
+
+      - name: Install Node.js dependencies
+        run: |
+          if [ -f package.json ]; then
+            npm ci --prefer-offline --no-audit
+          else
+            echo "No package.json found, skipping Node.js dependencies"
+          fi
+
+      - name: Install Python dependencies
+        run: |
+          pip install --upgrade pip
+          pip install flake8 black pylint bandit safety
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
+
+      - name: Lint shell scripts
+        run: |
+          if command -v shellcheck &> /dev/null; then
+            find . -name "*.sh" -type f -exec shellcheck {} \;
+          else
+            echo "Installing shellcheck..."
+            sudo apt-get update && sudo apt-get install -y shellcheck
+            find . -name "*.sh" -type f -exec shellcheck {} \;
+          fi
+
+      - name: Lint JavaScript/TypeScript
+        run: |
+          if [ -f package.json ] && [ -f .eslintrc.js ] || [ -f .eslintrc.json ] || [ -f .eslintrc.yml ]; then
+            npx eslint . --ext .js,.jsx,.ts,.tsx --format=compact
+          else
+            echo "No ESLint configuration found, skipping JS/TS linting"
+          fi
+
+      - name: Check code formatting (Prettier)
+        run: |
+          if [ -f package.json ] && [ -f .prettierrc ] || [ -f .prettierrc.json ] || [ -f .prettierrc.yml ]; then
+            npx prettier --check .
+          else
+            echo "No Prettier configuration found, skipping format check"
+          fi
+
+      - name: Lint Python code (flake8)
+        run: |
+          if find . -name "*.py" -type f | head -1 | grep -q .; then
+            flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+            flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+          else
+            echo "No Python files found, skipping Python linting"
+          fi
+
+      - name: Format Python code (black)
+        run: |
+          if find . -name "*.py" -type f | head -1 | grep -q .; then
+            black --check --diff .
+          else
+            echo "No Python files found, skipping Python format check"
+          fi
+
+      - name: Python security analysis (bandit)
+        run: |
+          if find . -name "*.py" -type f | head -1 | grep -q .; then
+            bandit -r . -f json -o bandit-report.json || true
+            bandit -r . -f txt
+          else
+            echo "No Python files found, skipping bandit security analysis"
+          fi
+
+      - name: Check Python dependencies for security vulnerabilities
+        run: |
+          if [ -f requirements.txt ]; then
+            safety check --json --output safety-report.json || true
+            safety check
+          else
+            echo "No requirements.txt found, skipping Python security check"
+          fi
+
+      - name: Markdown linting
+        run: |
+          if find . -name "*.md" -type f | head -1 | grep -q .; then
+            npm install -g markdownlint-cli
+            markdownlint . --config .markdownlint.json || markdownlint . || true
+          else
+            echo "No Markdown files found, skipping Markdown linting"
+          fi
+
+      - name: Upload security reports
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: security-reports
+          path: |
+            bandit-report.json
+            safety-report.json
+          retention-days: 30
+
+  # CodeQL Security Analysis
+  codeql-analysis:
+    name: CodeQL Security Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'javascript', 'python' ]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-extended,security-and-quality
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v2
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        with:
+          category: "/language:${{matrix.language}}"
+
+  # Testing
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [code-quality]
+
+    strategy:
+      matrix:
+        test-type: [unit, integration]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          if [ -f package.json ]; then
+            npm ci --prefer-offline --no-audit
+          fi
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
+          pip install pytest pytest-cov
+
+      - name: Run JavaScript/TypeScript tests
+        if: matrix.test-type == 'unit'
+        run: |
+          if [ -f package.json ] && npm run test --if-present; then
+            npm run test -- --coverage --watchAll=false
+          else
+            echo "No JavaScript/TypeScript tests configured"
+          fi
+
+      - name: Run Python tests
+        if: matrix.test-type == 'unit'
+        run: |
+          if find . -name "test_*.py" -o -name "*_test.py" | head -1 | grep -q .; then
+            pytest --cov=. --cov-report=xml --cov-report=html
+          else
+            echo "No Python tests found"
+          fi
+
+      - name: Run integration tests
+        if: matrix.test-type == 'integration'
+        run: |
+          echo "Running integration tests..."
+          # Add integration test commands here
+          if [ -f tests/integration.sh ]; then
+            chmod +x tests/integration.sh
+            ./tests/integration.sh
+          else
+            echo "No integration tests configured"
+          fi
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: test-results-${{ matrix.test-type }}
+          path: |
+            coverage/
+            htmlcov/
+            .coverage
+            coverage.xml
+          retention-days: 30
+
+  # Documentation and Links Check
+  documentation:
+    name: Documentation Quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Check links in documentation
+        run: |
+          npm install -g markdown-link-check
+          find . -name "*.md" -not -path "./node_modules/*" -exec markdown-link-check {} \;
+
+      - name: Validate installation script
+        run: |
+          if [ -f install-agents.sh ]; then
+            echo "Validating installation script..."
+            chmod +x install-agents.sh
+            # Test dry run or syntax check
+            bash -n install-agents.sh
+            echo "Installation script syntax is valid"
+          fi
+
+      - name: Check agent configurations
+        run: |
+          if [ -d .claude/agents ]; then
+            echo "Checking agent configuration files..."
+            agent_count=$(find .claude/agents -name "*.md" -type f | wc -l)
+            echo "Found $agent_count agent configuration files"
+            
+            expected_agents=(
+              "architect.md"
+              "backend-developer.md"
+              "code-reviewer.md"
+              "data-scientist.md"
+              "debugger.md"
+              "devops-engineer.md"
+              "github-initializer.md"
+              "mobile-developer.md"
+              "mobile-ui-designer.md"
+              "po.md"
+              "qa-tester.md"
+              "security-engineer.md"
+              "web-developer.md"
+              "web-ui-designer.md"
+            )
+            
+            missing_agents=()
+            for agent in "${expected_agents[@]}"; do
+              if [ ! -f ".claude/agents/$agent" ]; then
+                missing_agents+=("$agent")
+              fi
+            done
+            
+            if [ ${#missing_agents[@]} -gt 0 ]; then
+              echo "Missing agent configuration files:"
+              printf '%s\n' "${missing_agents[@]}"
+              exit 1
+            else
+              echo "All 14 agent configuration files are present"
+            fi
+          fi
+
+  # Performance and Bundle Analysis
+  performance:
+    name: Performance Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          if [ -f package.json ]; then
+            npm ci --prefer-offline --no-audit
+          fi
+
+      - name: Analyze bundle size
+        run: |
+          if [ -f package.json ] && npm run build --if-present; then
+            npm run analyze --if-present || echo "No bundle analysis configured"
+          else
+            echo "No build process configured"
+          fi
+
+      - name: Repository size check
+        run: |
+          repo_size=$(du -sh . | cut -f1)
+          echo "Repository size: $repo_size"
+          
+          # Check if repository is getting too large
+          size_bytes=$(du -sb . | cut -f1)
+          max_size=$((100 * 1024 * 1024))  # 100MB limit
+          
+          if [ $size_bytes -gt $max_size ]; then
+            echo "Warning: Repository size ($repo_size) exceeds recommended 100MB"
+          fi
+
+  # Deployment Readiness Check
+  deployment-check:
+    name: Deployment Readiness
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [code-quality, test, documentation]
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check required files
+        run: |
+          echo "Checking deployment readiness..."
+          
+          required_files=(
+            "README.md"
+            "LICENSE"
+            ".gitignore"
+            "install-agents.sh"
+            "CLAUDE.md"
+          )
+          
+          missing_files=()
+          for file in "${required_files[@]}"; do
+            if [ ! -f "$file" ]; then
+              missing_files+=("$file")
+            fi
+          done
+          
+          if [ ${#missing_files[@]} -gt 0 ]; then
+            echo "Missing required files for deployment:"
+            printf '%s\n' "${missing_files[@]}"
+            exit 1
+          else
+            echo "All required files are present"
+          fi
+
+      - name: Validate project structure
+        run: |
+          echo "Validating project structure..."
+          
+          if [ ! -d ".claude/agents" ]; then
+            echo "Error: .claude/agents directory not found"
+            exit 1
+          fi
+          
+          if [ ! -d "docs" ]; then
+            echo "Warning: docs directory not found"
+          fi
+          
+          echo "Project structure validation complete"
+
+      - name: Generate deployment summary
+        run: |
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- Repository: Ready for deployment" >> $GITHUB_STEP_SUMMARY
+          echo "- Agent configurations: $(find .claude/agents -name "*.md" | wc -l) files" >> $GITHUB_STEP_SUMMARY
+          echo "- Documentation: $(find . -name "*.md" -not -path "./node_modules/*" | wc -l) files" >> $GITHUB_STEP_SUMMARY
+          echo "- Installation script: Available" >> $GITHUB_STEP_SUMMARY
+          echo "- CI/CD: Configured" >> $GITHUB_STEP_SUMMARY
+
+  # Security Dependency Check
+  dependency-security:
+    name: Dependency Security Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: npm audit
+        run: |
+          if [ -f package.json ]; then
+            npm audit --audit-level=moderate || true
+            npm audit --parseable --audit-level=moderate > npm-audit.json || true
+          else
+            echo "No package.json found, skipping npm audit"
+          fi
+
+      - name: Upload audit results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: security-audit
+          path: npm-audit.json
+          retention-days: 30
+
+  # Notification
+  notify:
+    name: Notification
+    runs-on: ubuntu-latest
+    needs: [code-quality, codeql-analysis, test, documentation, deployment-check]
+    if: always()
+
+    steps:
+      - name: Check workflow status
+        run: |
+          if [[ "${{ needs.code-quality.result }}" == "success" && 
+                "${{ needs.test.result }}" == "success" && 
+                "${{ needs.documentation.result }}" == "success" ]]; then
+            echo "✅ All CI/CD checks passed successfully!"
+            echo "status=success" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Some CI/CD checks failed"
+            echo "status=failure" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate summary
+        run: |
+          echo "## CI/CD Pipeline Results" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Code Quality | ${{ needs.code-quality.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Security Analysis | ${{ needs.codeql-analysis.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tests | ${{ needs.test.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Documentation | ${{ needs.documentation.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Deployment Check | ${{ needs.deployment-check.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY

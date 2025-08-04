@@ -1,0 +1,293 @@
+name: ✨ Feature Request
+description: Suggest a new feature or enhancement for the AI Agent Dev Team
+title: "[FEATURE]: "
+labels: ["enhancement", "feature-request"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Thank you for suggesting a feature!
+        
+        We appreciate your ideas for improving the AI Agent Dev Team. Please provide as much detail as possible to help us understand your suggestion.
+        
+        **Before submitting**: Please search existing issues to see if this feature has already been requested.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      description: Please confirm the following before submitting this feature request
+      options:
+        - label: I have searched existing issues and this is not a duplicate
+          required: true
+        - label: I have read the [README.md](../README.md) and [TUTORIAL.md](../TUTORIAL.md)
+          required: true
+        - label: This feature aligns with the project's goals and scope
+          required: true
+
+  - type: dropdown
+    id: feature-category
+    attributes:
+      label: Feature Category
+      description: What type of feature are you requesting?
+      options:
+        - New Agent Addition
+        - Agent Enhancement
+        - Phase Detection Improvement
+        - Tool Assignment Enhancement
+        - Installation Script Feature
+        - Documentation Improvement
+        - CI/CD Pipeline Enhancement
+        - Performance Optimization
+        - Security Enhancement
+        - User Experience Improvement
+        - Integration Feature
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: affected-component
+    attributes:
+      label: Affected Component(s)
+      description: Which part of the system would this feature affect?
+      multiple: true
+      options:
+        - Core Agent Framework
+        - Specific Agent (Will - PO)
+        - Specific Agent (Mike - Architect)
+        - Specific Agent (Amy - Web UI Designer)
+        - Specific Agent (Jennifer - Mobile UI Designer)
+        - Specific Agent (Sarah - Security Engineer)
+        - Specific Agent (Jim - Web Developer)
+        - Specific Agent (Bob - Mobile Developer)
+        - Specific Agent (Luke - Backend Developer)
+        - Specific Agent (Vijay - QA Tester)
+        - Specific Agent (Alex - DevOps Engineer)
+        - Utility Agent (code-reviewer)
+        - Utility Agent (debugger)
+        - Utility Agent (data-scientist)
+        - Utility Agent (github-initializer)
+        - Installation System
+        - Documentation
+        - CI/CD Pipeline
+        - Project Structure
+        - Multiple Components
+
+  - type: textarea
+    id: feature-summary
+    attributes:
+      label: Feature Summary
+      description: A brief, clear summary of the feature you're requesting
+      placeholder: Summarize your feature request in 1-2 sentences...
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem-statement
+    attributes:
+      label: Problem Statement
+      description: What problem does this feature solve? What's the current limitation?
+      placeholder: |
+        **Current Situation**: Describe what currently happens or what's missing
+        **Problem**: Explain the specific issue or limitation
+        **Impact**: Who is affected and how?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed Solution
+      description: Describe your proposed solution in detail
+      placeholder: |
+        **Solution**: Describe how you envision this feature working
+        **Implementation**: Any ideas on how it could be implemented
+        **User Experience**: How would users interact with this feature?
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-cases
+    attributes:
+      label: Use Cases
+      description: Provide specific examples of how this feature would be used
+      placeholder: |
+        **Use Case 1**: [Description]
+        - User enters: `claude --design --agent [agent] "[command]"`
+        - Expected behavior: [What should happen]
+        
+        **Use Case 2**: [Description]
+        - User situation: [Scenario]
+        - Feature usage: [How feature helps]
+      value: |
+        **Use Case 1**: 
+        - User enters: 
+        - Expected behavior: 
+        
+        **Use Case 2**: 
+        - User situation: 
+        - Feature usage: 
+    validations:
+      required: true
+
+  - type: textarea
+    id: example-commands
+    attributes:
+      label: Example Commands/Usage
+      description: Show examples of how this feature would be used
+      placeholder: |
+        claude --design --agent new-agent "example command"
+        claude --feature-name --option "example usage"
+      render: bash
+
+  - type: dropdown
+    id: priority-level
+    attributes:
+      label: Priority Level
+      description: How important is this feature to you?
+      options:
+        - 🔴 Critical - Essential for my workflow
+        - 🟡 High - Would significantly improve my experience
+        - 🟢 Medium - Nice to have enhancement
+        - ⚪ Low - Minor improvement
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: feature-scope
+    attributes:
+      label: Feature Scope
+      description: What aspects should this feature include?
+      options:
+        - label: New agent configuration
+        - label: Enhanced existing agent capabilities
+        - label: Improved phase detection
+        - label: Better tool integration
+        - label: Updated documentation
+        - label: Installation script changes
+        - label: CI/CD pipeline updates
+        - label: Backward compatibility maintenance
+        - label: Performance optimizations
+        - label: Security enhancements
+
+  - type: textarea
+    id: alternatives-considered
+    attributes:
+      label: Alternatives Considered
+      description: What alternatives have you considered? Why is your proposed solution better?
+      placeholder: |
+        **Alternative 1**: [Description and why it's not ideal]
+        **Alternative 2**: [Description and why it's not ideal]
+        **Why proposed solution is better**: [Explanation]
+
+  - type: textarea
+    id: implementation-suggestions
+    attributes:
+      label: Implementation Suggestions
+      description: If you have technical ideas about implementation, share them here
+      placeholder: |
+        **Technical Approach**: [Any technical suggestions]
+        **Files to Modify**: [Which files might need changes]
+        **Dependencies**: [Any new dependencies needed]
+        **Testing Strategy**: [How this feature should be tested]
+
+  - type: dropdown
+    id: breaking-changes
+    attributes:
+      label: Breaking Changes
+      description: Would this feature require breaking changes?
+      options:
+        - No breaking changes expected
+        - Minor breaking changes (with migration path)
+        - Major breaking changes required
+        - Unsure about breaking changes
+    validations:
+      required: true
+
+  - type: textarea
+    id: backward-compatibility
+    attributes:
+      label: Backward Compatibility
+      description: How should this feature handle backward compatibility?
+      placeholder: |
+        **Existing Installations**: How should existing users be affected?
+        **Migration Path**: What migration steps might be needed?
+        **Deprecation**: Should any existing features be deprecated?
+
+  - type: checkboxes
+    id: documentation-needs
+    attributes:
+      label: Documentation Requirements
+      description: What documentation would need to be updated?
+      options:
+        - label: README.md updates
+        - label: TUTORIAL.md additions
+        - label: CLAUDE.md agent configuration updates
+        - label: Installation guide changes
+        - label: Usage examples
+        - label: API/command reference updates
+        - label: Migration guide (if breaking changes)
+
+  - type: textarea
+    id: testing-strategy
+    attributes:
+      label: Testing Strategy
+      description: How should this feature be tested?
+      placeholder: |
+        **Unit Tests**: [What should be unit tested]
+        **Integration Tests**: [Integration testing needs]
+        **User Acceptance**: [How users should validate]
+        **Edge Cases**: [Special scenarios to test]
+
+  - type: checkboxes
+    id: contribution-willingness
+    attributes:
+      label: Contribution Willingness
+      description: Are you willing to help implement this feature?
+      options:
+        - label: I am willing to submit a pull request for this feature
+        - label: I can help with testing the implementation
+        - label: I can help with documentation updates
+        - label: I can provide feedback during development
+        - label: I prefer to let the maintainers implement this
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any additional information that might be helpful
+      placeholder: |
+        **References**: Links to similar features in other projects
+        **Screenshots/Mockups**: Visual representations (if applicable)
+        **Related Issues**: Links to related issues or discussions
+        **Community Interest**: Evidence of community interest in this feature
+
+  - type: dropdown
+    id: timeline-preference
+    attributes:
+      label: Timeline Preference
+      description: When would you ideally like to see this feature?
+      options:
+        - ASAP - This is blocking my work
+        - Next release cycle
+        - Within 3 months
+        - Within 6 months
+        - No specific timeline
+        - When maintainers have capacity
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Next Steps
+        
+        After submitting this feature request:
+        1. Our team will review and assess the request
+        2. We may ask for clarification or additional details
+        3. The community can provide feedback and show support
+        4. If approved, we'll plan implementation and timeline
+        5. You'll be notified of progress and when the feature is available
+        
+        Thank you for helping improve the AI Agent Dev Team! 🚀

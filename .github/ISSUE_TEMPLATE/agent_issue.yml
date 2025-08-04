@@ -1,0 +1,286 @@
+name: 🤖 Agent-Specific Issue
+description: Report an issue with a specific AI agent's behavior or configuration
+title: "[AGENT]: "
+labels: ["agent-issue", "triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Agent-Specific Issue Report
+        
+        Use this template to report issues specifically related to one of the 14 AI agents in the development team.
+        
+        **For general bugs**: Use the Bug Report template instead.
+        **For feature requests**: Use the Feature Request template instead.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      description: Please confirm the following before submitting this issue
+      options:
+        - label: I have searched existing issues and this is not a duplicate
+          required: true
+        - label: I have read the agent documentation in [CLAUDE.md](../CLAUDE.md)
+          required: true
+        - label: This is specifically an agent behavior or configuration issue
+          required: true
+
+  - type: dropdown
+    id: agent-name
+    attributes:
+      label: Affected Agent
+      description: Which specific agent is having issues?
+      options:
+        - Will (PO) - Product Owner
+        - Mike (Architect) - System Architect
+        - Amy (Web UI Designer) - Web UI Designer
+        - Jennifer (Mobile UI Designer) - Mobile UI Designer
+        - Sarah (Security Engineer) - Security Engineer
+        - Jim (Web Developer) - Web Developer
+        - Bob (Mobile Developer) - Mobile Developer
+        - Luke (Backend Developer) - Backend Developer
+        - Vijay (QA Tester) - QA Tester
+        - Alex (DevOps Engineer) - DevOps Engineer
+        - code-reviewer - Code Review Specialist
+        - debugger - Debugging Specialist
+        - data-scientist - Data Analysis Expert
+        - github-initializer - Repository Setup Expert
+    validations:
+      required: true
+
+  - type: dropdown
+    id: issue-type
+    attributes:
+      label: Issue Type
+      description: What type of agent issue are you reporting?
+      options:
+        - Agent Identification Problem
+        - Phase Detection Error
+        - Tool Access Issue
+        - Output Format Problem
+        - Agent Persona/Behavior Problem
+        - Agent Collaboration Issue
+        - Context Understanding Problem
+        - Specialization Accuracy Issue
+        - Performance Issue
+        - Other Agent Behavior
+    validations:
+      required: true
+
+  - type: dropdown
+    id: phase-context
+    attributes:
+      label: Phase Context
+      description: In which phase did this issue occur?
+      options:
+        - Design Phase (--design)
+        - Develop Phase (--develop)
+        - Direct Agent Call (no phase specified)
+        - Multiple Phases
+        - Phase Detection Failed
+        - Not Phase Related
+    validations:
+      required: true
+
+  - type: textarea
+    id: command-used
+    attributes:
+      label: Command Used
+      description: The exact command you used to invoke the agent
+      placeholder: |
+        claude --design --agent po "Create a task management application"
+      render: bash
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-agent-behavior
+    attributes:
+      label: Expected Agent Behavior
+      description: What should this agent have done based on its role and specialization?
+      placeholder: |
+        Based on the agent's role as [role description], I expected:
+        1. Agent should identify itself as [expected identification]
+        2. Agent should demonstrate expertise in [expected domain]
+        3. Agent should produce [expected output type]
+        4. Agent should use [expected tools]
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-agent-behavior
+    attributes:
+      label: Actual Agent Behavior
+      description: What did the agent actually do?
+      placeholder: |
+        The agent actually:
+        1. Identified itself as [actual identification]
+        2. Demonstrated [actual behavior]
+        3. Produced [actual output]
+        4. Used [actual tools or approach]
+    validations:
+      required: true
+
+  - type: textarea
+    id: agent-response
+    attributes:
+      label: Full Agent Response
+      description: Copy and paste the complete response from the agent
+      placeholder: Paste the full agent response here...
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: agent-identification
+    attributes:
+      label: Agent Identification Issues
+      description: Check any identification problems you observed
+      options:
+        - label: Agent did not identify itself at all
+        - label: Agent identified with wrong name/role
+        - label: Agent did not mention its specialization
+        - label: Agent did not indicate current phase (Design vs Develop)
+        - label: Agent persona was inconsistent with role
+        - label: Professional identity was unclear
+
+  - type: checkboxes
+    id: specialization-issues
+    attributes:
+      label: Specialization Issues
+      description: Check any problems with the agent's domain expertise
+      options:
+        - label: Agent demonstrated wrong technical expertise
+        - label: Agent used inappropriate tools for its role
+        - label: Agent suggested solutions outside its specialization
+        - label: Agent failed to leverage its specific domain knowledge
+        - label: Agent output format was inappropriate for its role
+        - label: Agent collaboration patterns were incorrect
+
+  - type: checkboxes
+    id: phase-issues
+    attributes:
+      label: Phase Detection Issues
+      description: Check any problems with Design vs Develop phase handling
+      options:
+        - label: Agent didn't detect phase correctly
+        - label: Agent behaved inappropriately for current phase
+        - label: Agent produced wrong output type for phase (docs vs code)
+        - label: Agent tools were inappropriate for phase
+        - label: Agent didn't reference previous phase work
+        - label: Phase transition was handled incorrectly
+
+  - type: textarea
+    id: tool-usage-analysis
+    attributes:
+      label: Tool Usage Analysis
+      description: Analyze if the agent used appropriate tools for its role
+      placeholder: |
+        **Expected Tools**: [List tools this agent should have access to]
+        **Tools Actually Used**: [List tools the agent used]
+        **Tool Usage Issues**: [Describe any inappropriate tool usage]
+        **Missing Tool Usage**: [Tools the agent should have used but didn't]
+
+  - type: textarea
+    id: context-analysis
+    attributes:
+      label: Context Understanding
+      description: How well did the agent understand and use context?
+      placeholder: |
+        **Project Context**: [Was project context understood correctly?]
+        **Previous Work Reference**: [Did agent reference previous agent outputs?]
+        **User Intent**: [Was user intent correctly interpreted?]
+        **Domain Context**: [Was domain-specific context applied?]
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Issue Severity
+      description: How severely does this affect the agent's functionality?
+      options:
+        - Critical - Agent completely unusable
+        - High - Major functionality broken
+        - Medium - Partial functionality issue
+        - Low - Minor behavior inconsistency
+    validations:
+      required: true
+
+  - type: textarea
+    id: workaround
+    attributes:
+      label: Workaround
+      description: Have you found any workarounds for this issue?
+      placeholder: |
+        **Workaround Found**: [Yes/No]
+        **Workaround Description**: [How you worked around the issue]
+        **Workaround Limitations**: [What limitations the workaround has]
+
+  - type: textarea
+    id: multiple-attempts
+    attributes:
+      label: Multiple Attempts
+      description: Have you tried the same command multiple times? Were results consistent?
+      placeholder: |
+        **Number of Attempts**: [How many times you tried]
+        **Consistent Results**: [Yes/No - were results the same each time?]
+        **Variation Details**: [If results varied, describe the differences]
+
+  - type: textarea
+    id: related-agents
+    attributes:
+      label: Related Agent Impact
+      description: Does this issue affect collaboration with other agents?
+      placeholder: |
+        **Collaboration Impact**: [How this affects working with other agents]
+        **Downstream Effects**: [What agents are affected by this agent's issues]
+        **Workflow Disruption**: [How this disrupts the overall development workflow]
+
+  - type: textarea
+    id: expected-output-sample
+    attributes:
+      label: Expected Output Sample
+      description: Provide an example of what the agent should have produced
+      placeholder: |
+        Based on this agent's role, the output should have been:
+        
+        ```
+        [Example of expected output format and content]
+        ```
+
+  - type: textarea
+    id: configuration-check
+    attributes:
+      label: Configuration Verification
+      description: Have you verified the agent configuration is correct?
+      placeholder: |
+        **Configuration File**: [Path to agent's .md file]
+        **Configuration Checked**: [Yes/No]
+        **Configuration Issues Found**: [Any issues in the configuration]
+        **Recent Changes**: [Any recent changes to agent configuration]
+
+  - type: textarea
+    id: improvement-suggestions
+    attributes:
+      label: Improvement Suggestions
+      description: How do you think this agent could be improved?
+      placeholder: |
+        **Agent Behavior**: [Suggestions for behavior improvements]
+        **Tool Assignment**: [Suggestions for tool assignment changes]
+        **Identification**: [Suggestions for better agent identification]
+        **Specialization**: [Suggestions for better domain specialization]
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Next Steps
+        
+        After submitting this agent issue:
+        1. We'll analyze the agent configuration and behavior
+        2. We may test the agent with similar commands
+        3. If confirmed, we'll update the agent configuration
+        4. We'll test the fix and update documentation if needed
+        5. You'll be notified when the agent issue is resolved
+        
+        Thank you for helping us improve our AI Agent Dev Team! 🤖
