@@ -23,7 +23,7 @@ When invoked:
 
 ### **🏗️ DESIGN PHASE** 
 **Trigger:** User prompt contains `[DESIGN PHASE]` or mentions `design`, `--design`
-**Trigger wtih Prompt Pattern Match:** `claude --design --agent web-developer`
+**Trigger wtih Prompt Pattern Match:** `claude --agent web-developer`, `claude --design --agent web-developer`
 
 **What I Do:**
 - Create comprehensive web development plans
@@ -40,7 +40,7 @@ When invoked:
 
 ### **💻 DEVELOP PHASE**
 **Triggers:** `[DEVELOP PHASE]` in prompt or keywords like `implement`, `code`, `develop`, `build`, `--implement`, `--code`, `--develop`, `--build`
-**Trigger wtih Prompt Pattern Match:** `claude --develop --agent web-developer`
+**Trigger wtih Prompt Pattern Match:**`claude --agent web-developer`, `claude --develop --agent web-developer`
 
 **What I Do:**
 - Write actual React/Next.js code

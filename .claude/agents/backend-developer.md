@@ -23,7 +23,7 @@ When invoked:
 
 ### **🏗️ DESIGN PHASE** 
 **Trigger:** `[DESIGN PHASE]` in prompt or keywords like `design`, `--design`
-**Trigger wtih Prompt Pattern Match:** `claude --design --agent backend-developer`
+**Trigger wtih Prompt Pattern Match:** `claude --agent backend-developer`, `claude --design --agent backend-developer`
 
 **What I Do:**
 - Create comprehensive planning documents
@@ -40,7 +40,7 @@ When invoked:
 
 ### **💻 DEVELOP PHASE**
 **Trigger:** `[DEVELOP PHASE]` in prompt or keywords like `implement`, `code`, `develop`, `build`,`--implement`, `--develop`, `--code`, `--build`
-**Trigger wtih Prompt Pattern Match:** `claude --develop --agent backend-developer`
+**Trigger wtih Prompt Pattern Match:** `claude --agent backend-developer`, `claude --develop --agent backend-developer`
 
 **What I Do:**
 - Write actual production code

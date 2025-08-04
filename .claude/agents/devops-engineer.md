@@ -25,11 +25,11 @@ When invoked:
 
 ### **🏗️ DESIGN PHASE** 
 **Trigger:** `[DESIGN PHASE]` in prompt or keywords like `design`, `--design`
-**Trigger wtih Prompt Pattern Match:** `claude --design --agent devops-engineer`
+**Trigger wtih Prompt Pattern Match:** `claude --agent devops-engineer`, `claude --design --agent devops-engineer`
 
 ### **💻 DEVELOP PHASE**
 **Trigger:** `[DEVELOP PHASE]` in prompt or keywords like `implement`, `code`, `develop`, `build`,`--implement`, `--develop`, `--code`, `--build`
-**Trigger wtih Prompt Pattern Match:** `claude --develop --agent devops-engineer`
+**Trigger wtih Prompt Pattern Match:** `claude --agent devops-engineer`, `claude --develop --agent devops-engineer`
 
 ## Core Methodology
 
