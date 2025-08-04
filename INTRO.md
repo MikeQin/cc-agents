@@ -20,6 +20,8 @@ This isn't just another collection of prompts. It's a **production-ready framewo
 
 ## ✨ What Makes This Special?
 
+![Claude-Code-Conversation](./images/Claude-Code-Conversation.jpg)
+
 ### 🎭 **Meet Your Team Members**
 Each agent has a **distinct professional persona** and introduces themselves when you work together:
 

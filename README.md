@@ -69,6 +69,8 @@ claude --develop --agent web-developer "Implement dashboard component"
 
 **Every agent identifies themselves first when invoked!** This ensures clear communication about who's handling your request.
 
+![Claude-Code-Conversation](./images/Claude-Code-Conversation.jpg)
+
 ### Agent Identity Examples
 
 | Command | Agent Response |
